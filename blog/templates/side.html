@@ -1,0 +1,31 @@
+{% load blog_tags %}
+ <aside class="col-md-4 blog-sidebar">
+    <div class="p-3 mb-3 bg-light rounded">
+      <h4 class="font-italic">My blog</h4>
+      <p class="mb-0">This is my blog. I've written {% total_posts %} posts so far.</p>
+      <pc lass="mb-0"> <a href="{% url "blog:post_feed" %}">Subscribe to my RSS feed</a></p>
+    </div>
+    
+    <div class="p-3">
+      <h3>Latest posts</h3>
+      {% show_latest_posts 3 %}
+      <h3>Most commented posts</h3>
+      {% get_most_commented_posts as most_commented_posts %}
+      <ul class="list-unstyled mb-0">
+      {% for post in most_commented_posts %}
+        <li>
+          <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+        </li>
+      {% endfor %}
+      </ul>
+    </div>
+
+    <div class="p-3">
+      <h4 class="font-italic">Elsewhere</h4>
+      <ol class="list-unstyled">
+        <li><a href="#">GitHub</a></li>
+        <li><a href="#">Twitter</a></li>
+        <li><a href="#">Facebook</a></li>
+      </ol>
+    </div>
+  </aside><!-- /.blog-sidebar -->
