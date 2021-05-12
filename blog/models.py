@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.base import Model
 from django.urls import reverse
 from django.db.models.fields import CharField, SlugField, TextField
 from django.utils import timezone
@@ -77,8 +78,33 @@ class Post( models.Model):
                         args=[self.publish.year,
                               self.publish.month,
                               self.publish.day, self.slug])
-    
+
+class Comment(models.Model):
+    '''
+    Models to Save Comments 
+    '''
+
+    post    = models.ForeignKey(Post,
+                                on_delete=models.CASCADE,
+                                related_name='comments')
+    name    = models.CharField(max_length=150)
+    email   = models.EmailField()
+    body    = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    active  = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = 'comment'
+        ordering = ('created',)
+        managed = True
+        verbose_name = '\comment'
+        verbose_name_plural = '\comments'
+
+    def __str__(self):
+        return f'Comment by {self.name} on {self.post}'
 
 
-
-
+    def get_absolute_url(self):
+        
+        return reverse('', kwargs={'pk': self.pk})
