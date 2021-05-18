@@ -6,6 +6,7 @@ from django.core.paginator import Paginator, EmptyPage,\
 from .forms import EmailPostForm, CommentForm
 from django.core.mail import send_mail
 from .models import Post, Comment
+from taggit.models import Tag
 
 def post_share(request, post_id):
     '''
@@ -35,12 +36,17 @@ def post_share(request, post_id):
                                                     'form': form,
                                                     'sent':sent})
 
-def post_list(request):
+def post_list(request, tag_slug=None):
+
     object_list = Post.published.all()
+    tag       = None
     paginator = Paginator(object_list, 4) # 3 posts in each page
     page      = request.GET.get('page')
   
-    print('HEllo')
+    if tag_slug:
+        tag         = get_object_or_404(Tag, slug=tag_slug)
+        object_list = object_list.filter(tags_in=[tag])
+    paginator     = Paginator(object_list, 3) # 
     try:
         posts     = paginator.page(page)
        
@@ -54,7 +60,8 @@ def post_list(request):
     return render(request,
                   'blog/post/list.html',
                  {'posts':posts,
-                  'page':page})
+                  'page':page,
+                  'tage':tag})
 
 class PostListView(ListView):
     '''
