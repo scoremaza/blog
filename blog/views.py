@@ -76,9 +76,10 @@ def post_detail(request, year, month, day, post):
     comments = post.comments.filter(active=True)
 
     new_comment = None
-
+    
     if request.method == 'POST':
         # A comment was posted
+        
         comment_form = CommentForm(data=request.POST)
         if comment_form.is_valid():
             # Create Comment object but don't save to database
@@ -87,8 +88,9 @@ def post_detail(request, year, month, day, post):
             new_comment.post = post 
             # Save the comment to the database
             new_comment.save()
-        else:
-            comment_form = CommentForm()
+    else:
+        
+        comment_form = CommentForm()
 
     return render(request,
                   'blog/post/detail.html',

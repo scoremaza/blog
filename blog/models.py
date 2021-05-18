@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.db.models.fields import CharField, SlugField, TextField
 from django.utils import timezone
 from django .contrib.auth.models import User
+from taggit.managers import TaggableManager
 
 class PublishedManager(models.Manager):
     def get_queryset(self):
@@ -42,6 +43,7 @@ class Post( models.Model):
     )
 
     title          =  models.TextField(max_length=150)
+    tags           =  TaggableManager()
     slug           =  models.SlugField(max_length=250,
                                       unique_for_date='publish')
     author         =  models.ForeignKey(User, 
