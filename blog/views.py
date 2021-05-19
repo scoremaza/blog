@@ -6,6 +6,7 @@ from django.core.paginator import Paginator, EmptyPage,\
 from .forms import EmailPostForm, CommentForm
 from django.core.mail import send_mail
 from .models import Post, Comment
+from django.db.models import Count
 from taggit.models import Tag
 
 def post_share(request, post_id):
@@ -56,12 +57,13 @@ def post_list(request, tag_slug=None):
     except EmptyPage:
         # IF page is out of range deliver last page results
         post = paginator.page(paginator.num_pages)
-    
+   
     return render(request,
                   'blog/post/list.html',
                  {'posts':posts,
                   'page':page,
-                  'tage':tag})
+                  'tag':tag,
+                  })
 
 class PostListView(ListView):
     '''
@@ -98,12 +100,17 @@ def post_detail(request, year, month, day, post):
     else:
         
         comment_form = CommentForm()
-
+    post_tags_ids = post.tags.values_list('id', flat=True)
+    similar_posts = Post.published.filter(tags_in=post_tags_ids)\
+                                 .exclude(id=post.id)
+    similar_posts = similar_posts.annotate(same_tags=Count('tags'))\
+                               .order_by('same_tags','-publish')[:4]
     return render(request,
                   'blog/post/detail.html',
                   {'post':post,
                   'comments': comments,
                   'new_comment': new_comment,
-                  'comment_form': comment_form})
+                  'comment_form': comment_form,
+                  'similar_posts': similar_posts})
 
 # Create your views here.
